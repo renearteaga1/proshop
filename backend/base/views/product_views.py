@@ -1,4 +1,3 @@
-import imp
 from django.shortcuts import render
 
 from rest_framework.decorators import api_view, permission_classes
@@ -8,6 +7,7 @@ from rest_framework import status
 
 from base.models import Product
 from base.serializers import ProductSerializer
+
 
 @api_view(['GET'])
 def getProducts(request):
