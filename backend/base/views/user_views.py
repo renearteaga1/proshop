@@ -17,23 +17,26 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 '''JWT Costumization'''
+
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     '''
     validate is for returning values when generating the token and refresh.
     This was taken from git repository of JWT simple
     '''
+
     def validate(self, attrs):
         data = super().validate(attrs)
-        
+
         # data['username'] = self.user.username
         # data['email'] = self.user.email
         serializer = UserSerializerWithToken(self.user).data
         for k, v in serializer.items():
             data[k] = v
-        
+
         return data
-    
-    '''get_token is for returning values encrypted in the token'''    
+
+    '''get_token is for returning values encrypted in the token'''
     # @classmethod
     # def get_token(cls, user):
     #     token = super().get_token(user)
@@ -45,13 +48,15 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     #     return token
 
+
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
 
 @api_view(['POST'])
 def registerUser(request):
     data = request.data
-    print('data: ',data)
+    print('data: ', data)
     try:
         user = User.objects.create(
             first_name=data['name'],
@@ -62,7 +67,7 @@ def registerUser(request):
         serializer = UserSerializerWithToken(user, many=False)
         return Response(serializer.data)
     except:
-        message = {'detail':'User with this email already exists.'}
+        message = {'detail': 'User with this email already exists.'}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -71,22 +76,24 @@ def registerUser(request):
 def updateUserProfile(request):
     user = request.user
     serializer = UserSerializerWithToken(user, many=False)
-    
-    data = request.data    
+
+    data = request.data
     user.first_name = data['name']
     user.username = data['email']
     user.email = data['email']
     if data['password']:
-        user.password = make_password(data['password'])  
+        user.password = make_password(data['password'])
     user.save()
     return Response(serializer.data)
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getUserProfile(request):
     user = request.user
-    serializer = UserSerializer(user, many=False)        
+    serializer = UserSerializer(user, many=False)
     return Response(serializer.data)
+
 
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
@@ -94,3 +101,38 @@ def getUsers(request):
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def getUserById(request, pk):
+    user = User.objects.get(id=pk)
+    serializer = UserSerializer(user, many=False)
+    return Response(serializer.data)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def updateUser(request, pk):
+    user = User.objects.get(id=pk)
+    serializer = UserSerializer(user, many=False)
+
+    data = request.data
+    user.first_name = data['name']
+    user.username = data['email']
+    user.email = data['email']
+    user.is_staff = data['isAdmin']
+
+    user.save()
+
+    serializer = UserSerializer(user, many=False)
+    return Response(serializer.data)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAdminUser])
+def deleteUser(request, pk):
+    userForDeletion = User.objects.get(id=pk)
+    message = f'User {userForDeletion.name} was deleted'
+    userForDeletion.delete()
+    return Response(message)

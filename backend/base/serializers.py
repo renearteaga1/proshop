@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -61,6 +63,8 @@ class OrderSerializer(serializers.ModelSerializer):
     orderItems = serializers.SerializerMethodField(read_only=True)
     shippingAddress = serializers.SerializerMethodField(read_only=True)
     user = serializers.SerializerMethodField(read_only=True)
+    atCreated = serializers.SerializerMethodField(read_only=True)
+    atPaid = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Order
@@ -73,7 +77,8 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def get_shippingAddress(self, obj):
         try:
-            address = ShippingAddressSerializer(obj.shippingaddress, many=False).data
+            address = ShippingAddressSerializer(
+                obj.shippingaddress, many=False).data
         except:
             address = False
         return address
@@ -82,3 +87,10 @@ class OrderSerializer(serializers.ModelSerializer):
         user = obj.user
         serializer = UserSerializer(user, many=False)
         return serializer.data
+
+    def get_atCreated(self, obj):
+        return obj.createdAt.strftime("%d-%b-%Y %H:%M:%S")
+
+    def get_atPaid(self, obj):
+        if obj.paidAt:
+            return obj.paidAt.strftime("%d-%b-%Y %H:%M:%S")
