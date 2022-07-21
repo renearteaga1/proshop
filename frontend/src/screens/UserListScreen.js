@@ -36,8 +36,8 @@ function UserListScreen({ history }) {
       history.push("/login");
     }
 
-    dispatch(listUsers());
-  }, [dispatch, history, successDelete]);
+    // dispatch(listUsers());
+  }, [dispatch, history, successDelete, userInfo]);
 
   const deleteHandler = (id, name) => {
     handleShow();
