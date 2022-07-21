@@ -42,10 +42,13 @@ class UserSerializerWithToken(UserSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    atCreated = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = Review
         fields = '__all__'
-
+    
+    def get_atCreated(self, obj):
+        return obj.createdAt.strftime("%d-%b-%Y %H:%M:%S")
 
 class ProductSerializer(serializers.ModelSerializer):
     reviews = serializers.SerializerMethodField(read_only=True)

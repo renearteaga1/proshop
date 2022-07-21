@@ -13,11 +13,13 @@ import Product from "../components/Product";
 
 // import products from "../products";
 
-function HomeScreen() {
+function HomeScreen({ history }) {
   // const [products, setProducts] = useState([]);
   const dispatch = useDispatch();
   const productList = useSelector((state) => state.productList);
   const { error, loading, products } = productList;
+
+  let keyword = history.location.search;
 
   useEffect(() => {
     // console.log("use effect triggered");
@@ -28,8 +30,8 @@ function HomeScreen() {
     // }
     // fetchProducts();
 
-    dispatch(listProducts());
-  }, [dispatch]);
+    dispatch(listProducts(keyword));
+  }, [dispatch, keyword]);
 
   return (
     <div>
