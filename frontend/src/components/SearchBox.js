@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Row, Col } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 
 function SearchBox() {
@@ -10,7 +10,7 @@ function SearchBox() {
   const submitHandler = (e) => {
     e.preventDefault();
     if (keyword) {
-      history.push(`/?keyword=${keyword}`);
+      history.push(`/?keyword=${keyword}&page=1`);
     } else {
       history.push(history.push(history.location.pathname));
     }
@@ -18,15 +18,21 @@ function SearchBox() {
 
   return (
     <Form onSubmit={submitHandler}>
-      <Form.Control
-        type="text"
-        name="q"
-        onChange={(e) => setKeyword(e.target.value)}
-        className="mr-sm-2 ml-sm-5"
-      ></Form.Control>
-      <Button type="submit" variant="outline-success" className="p-2">
-        Submit
-      </Button>
+      <Row>
+        <Col>
+          <Form.Control
+            type="text"
+            name="q"
+            onChange={(e) => setKeyword(e.target.value)}
+            className="me-sm-2 ms-sm-5"
+          ></Form.Control>
+        </Col>
+        <Col sm={4}>
+          <Button type="submit" variant="outline-success" className="p-2">
+            Submit
+          </Button>
+        </Col>
+      </Row>
     </Form>
   );
 }
